@@ -19,7 +19,7 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org/
       - name: Install dependencies and build  🔧 🔧
-      - run: yarn install --frozen-lockfile && npm run build
+        run: yarn install --frozen-lockfile && npm run build
 
   publish-npm:
     needs: build
