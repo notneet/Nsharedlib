@@ -5,7 +5,7 @@ import { GdriveVideoProps } from './types';
 export const extractUrlGdrive = async ({
   url,
 }: GdriveVideoProps): Promise<string> => {
-  if (isEmpty(url)) throw new Error('url is empty');
+  if (isEmpty(url)) throw new Error('url cannot be empty!');
 
   try {
     const responseUrl = await axios.default.get(url);
