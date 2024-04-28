@@ -1,3 +1,3 @@
-export type GdriveVideoProps = {
+export type ExtractUrlProps = {
   url: string;
 };

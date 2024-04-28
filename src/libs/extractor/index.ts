@@ -1,2 +1,2 @@
-export * from './gdrive-video';
+export * from './extractor';
 export * from './types';
