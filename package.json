@@ -1,5 +1,5 @@
 {
-  "name": "nshared",
+  "name": "nsharedlib",
   "version": "0.0.1",
   "description": "Shared library of NotNeet",
   "main": "./dist/index.js",
@@ -7,7 +7,7 @@
   "types": "./dist/index.d.ts",
   "author": "アニップ <Hanivan@users.noreply.github.com>",
   "license": "MIT",
-  "homepage": "https://github.com/notneet/Nshared#readme",
+  "homepage": "https://github.com/notneet/Nsharedlib#readme",
   "scripts": {
     "prebuild": "rimraf dist",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -18,7 +18,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/notneet/Nshared.git"
+    "url": "https://github.com/notneet/Nsharedlib.git"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
