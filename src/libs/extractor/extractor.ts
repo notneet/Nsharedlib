@@ -55,7 +55,7 @@ export class ExtractorUrl {
    * @throws {Error} - If the video does not exist.
    * @throws {Error} - If there is a bad response from the server.
    */
-  async extractVideoUrlOtakudesu({
+  async extractVideoEmbedOtakudesu({
     url,
     resolution = '480p',
   }: ExtractUrlProps): Promise<string | null> {
@@ -74,8 +74,10 @@ export class ExtractorUrl {
       };
       const $ = parseHtml(responseUrl?.data);
       const encodedVideoDetail: OtakudesuVideoDetail =
-        OtakudesuHelper.getOtakudesuVideoHashMirror($);
+        OtakudesuHelper.getOtakudesuVideoHashMirror($, resolution);
       const otakudesuTokens = OtakudesuHelper.getOtakudesuToken($);
+
+      if (isEmpty(encodedVideoDetail?.i)) return null;
 
       if (arrayNotEmpty(otakudesuTokens)) {
         const { data, status } = await axios.post<{ data: string }>(
@@ -120,5 +122,28 @@ export class ExtractorUrl {
 
       throw error;
     }
+  }
+
+  async extractVideoUrlOtakudesu({
+    url,
+    resolution = '480p',
+  }: ExtractUrlProps) {
+    const videoEmbed = atob(
+      (await this.extractVideoEmbedOtakudesu({ url, resolution })) || '',
+    );
+    if (isEmpty(videoEmbed)) return null;
+
+    const iframe = load(videoEmbed);
+    const iframeSrc = iframe('iframe').attr('src') || '';
+    if (isEmpty(iframeSrc)) throw new Error('iframeSrc are empty');
+
+    const responseEmbed = await axios.get(iframeSrc);
+    const $ = load(responseEmbed.data);
+    const videoSource =
+      $('script[type="text/javascript"]').first().html() || '';
+    const match = /'file':'([^']+)'/gm.exec(videoSource);
+    const videoFileUrl = match && match[1];
+
+    return videoFileUrl;
   }
 }

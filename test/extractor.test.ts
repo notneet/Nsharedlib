@@ -47,15 +47,53 @@ describe('Test ExtractorUrl', () => {
 
   describe('[Otakudesu Extractor]', () => {
     it(
-      'Load Episode Page @Positive',
+      'Extract Video Embed @Positive',
+      async () => {
+        const result = await extractorUrl.extractVideoEmbedOtakudesu({
+          url: 'https://otakudesu.cloud/episode/mknr-s3-episode-1-sub-indo/',
+          resolution: '480p',
+        });
+
+        expect(result).toBeDefined();
+      },
+      15 * TimeFormat.SECOND,
+    );
+
+    it(
+      'Extract Video Embed @Negative',
+      async () => {
+        const result = await extractorUrl.extractVideoEmbedOtakudesu({
+          url: 'https://otakudesu.cloud/episode/mknr-s3-episode-1-sub-indo/',
+          resolution: '720p',
+        });
+
+        expect(result).toBeNull();
+      },
+      15 * TimeFormat.SECOND,
+    );
+
+    it(
+      'Extract Url Download Video @Positive',
+      async () => {
+        const result = await extractorUrl.extractVideoUrlOtakudesu({
+          url: 'https://otakudesu.cloud/episode/mknr-s3-episode-1-sub-indo/',
+          resolution: '480p',
+        });
+
+        expect(result).toBeDefined();
+      },
+      15 * TimeFormat.SECOND,
+    );
+
+    it(
+      'Extract Url Download Video @Negative',
       async () => {
         const result = await extractorUrl.extractVideoUrlOtakudesu({
           url: 'https://otakudesu.cloud/episode/mknr-s3-episode-1-sub-indo/',
           resolution: '720p',
         });
-        // console.log(result);
 
-        expect(result).toBeDefined();
+        expect(result).toBeNull();
       },
       15 * TimeFormat.SECOND,
     );

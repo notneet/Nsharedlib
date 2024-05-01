@@ -5,17 +5,24 @@ import { OtakudesuVideoDetail } from './types';
 export class OtakudesuHelper {
   constructor() {}
 
-  static getOtakudesuVideoHashMirror($: Document): OtakudesuVideoDetail {
+  static getOtakudesuVideoHashMirror(
+    $: Document,
+    resolution: string,
+  ): OtakudesuVideoDetail {
     const encodedVideoDetail: any = $.get(
       `(//div[@class='mirrorstream']/ul//a)[1]/@data-content`,
     );
+    const componentList: string[] = $.find(
+      `//div[@class='mirrorstream']/ul[@class='m${resolution}']/li`,
+    )?.map?.((it: any) => it?.text());
+    const registeredMediaPlayers = this.findRegisteredVideoEmbed(componentList);
 
     if (isNotEmpty(encodedVideoDetail)) {
       const decodedVideoDetail: OtakudesuVideoDetail = JSON.parse(
         atob(encodedVideoDetail?.value()),
       );
 
-      return decodedVideoDetail;
+      return { ...decodedVideoDetail, i: registeredMediaPlayers[0] };
     }
 
     return {} as OtakudesuVideoDetail;
@@ -31,5 +38,11 @@ export class OtakudesuHelper {
     )?.map((it) => it?.replace(/action:/g, '')?.replace(/"/g, ''));
 
     return actionTokenMatchReplaced;
+  }
+
+  private static findRegisteredVideoEmbed(arr: string[]) {
+    return ['ondesu3', 'odstream', 'ondesuhd']
+      .filter((it) => arr.includes(it))
+      .map((it, i) => i);
   }
 }
