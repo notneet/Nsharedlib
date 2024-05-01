@@ -1,8 +1,14 @@
 import axios from 'axios';
 import { load } from 'cheerio';
-import { isEmpty, isNotEmpty } from 'class-validator';
+import {
+  arrayNotEmpty,
+  isEmpty,
+  isNotEmpty,
+  isNotEmptyObject,
+} from 'class-validator';
 import { parseHtml } from 'libxmljs2';
 import { BASEURL_DECODER_ACTION_OTAKUDESU } from './constant';
+import { OtakudesuHelper } from './otakudesu';
 import {
   ExtractUrlProps,
   OtakudesuVideoDetail,
@@ -90,6 +96,9 @@ export class ExtractorUrl {
   }: ExtractUrlProps): Promise<string | null> {
     if (isEmpty(url)) throw new Error('url cannot be empty!');
 
+    const responseUrl = await axios.get(url);
+    if (responseUrl?.status !== 200) throw new Error('Bad Response');
+
     let formData: OtakudesuVideoPayload = {
       id: 0,
       i: 0,
@@ -97,46 +106,33 @@ export class ExtractorUrl {
       nonce: '',
       action: '',
     };
-    const responseUrl = await axios.get(url);
-    if (responseUrl?.status !== 200) throw new Error('Bad Response');
-
     const $ = parseHtml(responseUrl?.data);
-    const script = $.get('(//script[3])[4]');
-    const encodedVideoDetail: any = $.get(
-      `(//div[@class='mirrorstream']/ul//a)[1]/@data-content`,
-    );
+    const encodedVideoDetail: OtakudesuVideoDetail =
+      OtakudesuHelper.getOtakudesuVideoHashMirror($);
+    const otakudesuTokens = OtakudesuHelper.getOtakudesuToken($);
 
-    if (isNotEmpty(encodedVideoDetail)) {
-      const decodedVideoDetail: OtakudesuVideoDetail = JSON.parse(
-        atob(encodedVideoDetail?.value()),
-      );
-      formData = {
-        ...formData,
-        ...decodedVideoDetail,
-        q: resolution,
-      };
-    }
-
-    if (isNotEmpty(script)) {
-      const actionTokenMatch = script?.toString()?.match(/action:"([^"]+)"/g);
-      const actionTokenMatchReplaced = Array.from(
-        new Set(actionTokenMatch),
-      )?.map((it) => it?.replace(/action:/g, '')?.replace(/"/g, ''));
-      const { data } = await axios.post<{ data: string }>(
+    if (arrayNotEmpty(otakudesuTokens)) {
+      const { data, status } = await axios.post<{ data: string }>(
         BASEURL_DECODER_ACTION_OTAKUDESU,
-        { action: actionTokenMatchReplaced[1] },
+        { action: otakudesuTokens[1] },
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
         },
       );
+      if (status !== 200) throw new Error('Bad Response while get token');
 
-      formData.nonce = data?.data;
-      formData.action = actionTokenMatchReplaced[0];
+      formData = {
+        ...formData,
+        ...encodedVideoDetail,
+        q: resolution,
+        action: otakudesuTokens[0],
+        nonce: data?.data,
+      };
     }
 
-    if (isNotEmpty(formData?.id)) {
+    if (isNotEmptyObject(encodedVideoDetail)) {
       const { data, status } = await axios.post<{ data: string }>(
         BASEURL_DECODER_ACTION_OTAKUDESU,
         formData,
@@ -146,7 +142,8 @@ export class ExtractorUrl {
           },
         },
       );
-      if (status !== 200) throw new Error('Bad Response');
+      if (status !== 200)
+        throw new Error('Bad Response while get encoded video component');
 
       return data?.data;
     }
