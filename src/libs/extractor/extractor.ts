@@ -60,6 +60,8 @@ export class ExtractorUrl {
           urlDownload.searchParams.append('id', idValue);
         }
         urlDownload.searchParams.append('export', 'download');
+      } else {
+        return null;
       }
 
       return urlDownload?.searchParams?.size > 1
