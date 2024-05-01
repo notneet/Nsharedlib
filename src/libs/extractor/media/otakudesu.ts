@@ -1,6 +1,6 @@
 import { isNotEmpty } from 'class-validator';
 import { Document } from 'libxmljs2';
-import { OtakudesuVideoDetail } from './types';
+import { OtakudesuVideoDetail } from '../types';
 
 export class OtakudesuHelper {
   constructor() {}

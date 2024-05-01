@@ -1,6 +1,6 @@
 import { CheerioAPI } from 'cheerio';
 import { isNotEmpty } from 'class-validator';
-import { BASEURL_DOWNLOAD_GDRIVE } from './constant';
+import { BASEURL_DOWNLOAD_GDRIVE } from '../constant';
 
 export class GDriveHelper {
   private static urlDownload = new URL(BASEURL_DOWNLOAD_GDRIVE);

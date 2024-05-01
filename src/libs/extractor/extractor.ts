@@ -3,8 +3,8 @@ import { load } from 'cheerio';
 import { arrayNotEmpty, isEmpty, isNotEmptyObject } from 'class-validator';
 import { parseHtml } from 'libxmljs2';
 import { BASEURL_DECODER_ACTION_OTAKUDESU } from './constant';
-import { GDriveHelper } from './gdrive';
-import { OtakudesuHelper } from './otakudesu';
+import { GDriveHelper } from './media/gdrive';
+import { OtakudesuHelper } from './media/otakudesu';
 import {
   ExtractUrlProps,
   OtakudesuVideoDetail,
