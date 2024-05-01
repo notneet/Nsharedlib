@@ -41,7 +41,19 @@ export class OtakudesuHelper {
   }
 
   private static findRegisteredVideoEmbed(arr: string[]) {
-    return ['ondesu3', 'odstream', 'ondesuhd']
+    return [
+      'ondesu3',
+      'odstream',
+      'ondesuhd',
+      'updesu',
+      'desudesu3',
+      'desudesuhd3',
+      'desudrive',
+      'otakuplay',
+      'otakustream',
+      'playdesu',
+      'ondesu',
+    ]
       .filter((it) => arr.includes(it))
       .map((it, i) => i);
   }
